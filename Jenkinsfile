@@ -8,7 +8,7 @@ pipeline {
   environment {
 		appName = "variable" 
 	    SONAR_SCANNER_HOME = "/opt/sonar-scanner"   
-        SONAR_HOST_URL = "http://http://35.153.134.0:9000" 
+        SONAR_HOST_URL = "http://35.153.134.0:9000" 
         SONAR_TOKEN = credentials('tokensonar') 
   } 
   
