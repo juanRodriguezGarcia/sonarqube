@@ -1,8 +1,8 @@
-pipeline {
+﻿pipeline {
     agent any
 
     environment {
-        SONAR_SCANNER_HOME = "/opt/sonar-scanner"   // Ruta donde está el scanner en la EC2
+        SONAR_SCANNER_HOME = "/opt/sonar-scanner"   // Ruta donde est el scanner en la EC2
         SONAR_HOST_URL = "http://http://35.153.134.0" // Reemplaza con la URL de SonarQube
         SONAR_TOKEN = credentials('sonarqube-token') // ID de la credencial en Jenkins
     }
@@ -16,7 +16,7 @@ pipeline {
 
         //stage('Build') {
         //    steps {
-        //        sh 'mvn clean package'  // Ajusta según tu tecnología
+        //        sh 'mvn clean package'  // Ajusta segn tu tecnologa
         //    }
         //}
 
@@ -37,7 +37,7 @@ pipeline {
                 script {
                     def qg = waitForQualityGate()
                     if (qg.status != 'OK') {
-                        error "El análisis de calidad no pasó: ${qg.status}"
+                        error "El anlisis de calidad no paso: ${qg.status}"
                     }
                 }
             }
