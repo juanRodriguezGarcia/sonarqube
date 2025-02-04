@@ -26,7 +26,7 @@ pipeline {
     }
 	
 	
-
+	        stage('SonarQube Scan') {
             steps {
                 sh '''
                     ${SONAR_SCANNER_HOME}/bin/sonar-scanner \
@@ -36,9 +36,9 @@ pipeline {
                     -Dsonar.login=${SONAR_TOKEN}
                 '''
             }
-        
+        }
 
-  
+        stage('Quality Gate') {
             steps {
                 script {
                     def qg = waitForQualityGate()
@@ -47,7 +47,7 @@ pipeline {
                     }
                 }
             }
-        
+        }
 	
 	
   }
