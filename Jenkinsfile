@@ -6,24 +6,24 @@ def jsonParse(def json) {
 pipeline {
   agent any 
   environment {
-    appName = "variable" 
-	        SONAR_SCANNER_HOME = "/opt/sonar-scanner"   
-        SONAR_HOST_URL = "http://http://35.153.134.0" 
+		appName = "variable" 
+	    SONAR_SCANNER_HOME = "/opt/sonar-scanner"   
+        SONAR_HOST_URL = "http://http://35.153.134.0:9000" 
         SONAR_TOKEN = credentials('tokensonar') 
-  }
+  } 
   
 
   
  stages {
 
- stage("paso 1"){
-     
-      steps {
-          script {			
-           sh "echo 'hola mundo desde GIT'"
-        }
-      }
-    }
+		 stage("paso 1"){
+			 
+			  steps {
+				  script {			
+				   sh "echo 'hola mundo desde GIT'"
+				}
+			  }
+			}
 	
 	
 	        stage('SonarQube Scan') {
