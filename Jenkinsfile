@@ -14,7 +14,7 @@ pipeline {
   
 
   
-  stages {
+ stages {
 
  stage("paso 1"){
      
@@ -24,6 +24,32 @@ pipeline {
         }
       }
     }
+	
+	
+
+            steps {
+                sh '''
+                    ${SONAR_SCANNER_HOME}/bin/sonar-scanner \
+                    -Dsonar.projectKey=mi-proyecto \
+                    -Dsonar.sources=src \
+                    -Dsonar.host.url=${SONAR_HOST_URL} \
+                    -Dsonar.login=${SONAR_TOKEN}
+                '''
+            }
+        
+
+  
+            steps {
+                script {
+                    def qg = waitForQualityGate()
+                    if (qg.status != 'OK') {
+                        error "El anlisis de calidad no paso: ${qg.status}"
+                    }
+                }
+            }
+        
+	
+	
   }
   post {
       always {          
