@@ -45,6 +45,28 @@ pipeline {
                 }
             }
         }
+		
+		stage('Wait for Quality Gate') {
+            steps {
+                script {
+                    // Esperar el Quality Gate usando la API de SonarQube
+                    def sonarApiUrl = "${SONARQUBE_URL}/api/qualitygates/project_status?projectKey=mi-proyecto-dockerfile"
+                    def response = sh(script: "curl -u ${SONAR_TOKEN}: ${sonarApiUrl}", returnStdout: true).trim()
+                    
+                    // Parsear la respuesta JSON
+                    def jsonResponse = jsonParse(response)
+                    def qualityGateStatus = jsonResponse.projectStatus.status
+
+                    // Verificar el estado del Quality Gate
+                    if (qualityGateStatus != 'OK') {
+                        error "Quality gate failed: ${qualityGateStatus}"
+                    } else {
+                        echo "Quality Gate passed!"
+                    }
+                }
+            }
+        }
+		
     }
 
     post {
