@@ -1,0 +1,52 @@
+pipeline {
+    agent {
+        dockerfile {
+            dir '.'  // Indica que el Dockerfile está en el directorio raíz del proyecto
+            args '-v /var/run/docker.sock:/var/run/docker.sock --add-host sonar.server.test:35.153.134.0:9000'  // Mapea el Docker Socket y agrega el host de SonarQube
+        }
+    }
+    
+    environment {
+        SONARQUBE_URL = "http://35.153.134.0:9000"  // URL de tu servidor SonarQube
+        SONAR_TOKEN = credentials('tokensonar')  // Credenciales de SonarQube
+    }
+
+    stages {
+        stage('Checkout Código') {
+            steps {
+                checkout scm  // Clona el repositorio
+            }
+        }
+
+        stage('Instalar Dependencias y Compilar') {
+            steps {
+                script {
+                    sh 'npm install'  // Instala las dependencias del proyecto Node.js
+                    sh 'npm run build'  // Ejecuta la compilación, si es necesario
+                }
+            }
+        }
+
+        stage('Ejecutar SonarQube Scan') {
+            steps {
+                script {
+                    // Ejecuta el escaneo de SonarQube dentro del contenedor Docker
+                    sh """
+                        sonar-scanner \
+                        -Dsonar.projectKey=mi-proyecto-dockerfile \
+                        -Dsonar.sources=codigo \
+                        -Dsonar.host.url=${SONARQUBE_URL} \
+                        -Dsonar.login=${SONAR_TOKEN}
+                    """
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            // Limpiar el contenedor, si es necesario
+            cleanWs()
+        }
+    }
+}

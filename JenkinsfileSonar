@@ -14,8 +14,54 @@
             }
         }
 
+        //stage('Build') {
+        //    steps {
+        //        sh 'mvn clean package'  // Ajusta segn tu tecnologa
+        //    }
+        //}
 
+        stage('SonarQube Scan') {
+            steps {
+                sh '''
+                    ${SONAR_SCANNER_HOME}/bin/sonar-scanner \
+                    -Dsonar.projectKey=mi-proyecto \
+                    -Dsonar.sources=src \
+                    -Dsonar.host.url=${SONAR_HOST_URL} \
+                    -Dsonar.login=${SONAR_TOKEN}
+                '''
+            }
+        }
 
-
+        stage('Quality Gate') {
+            steps {
+                script {
+                    def qg = waitForQualityGate()
+                    if (qg.status != 'OK') {
+                        error "El anlisis de calidad no paso: ${qg.status}"
+                    }
+                }
+            }
+        }
     }
 }
+
+        stage('Wait for Quality Gate') {
+            steps {
+                script {
+                    // Esperar el Quality Gate usando la API de SonarQube
+                    def sonarApiUrl = "${SONAR_HOST_URL}/api/qualitygates/project_status?projectKey=mi-proyecto"
+                    def response = sh(script: "curl -u ${SONAR_TOKEN}: ${sonarApiUrl}", returnStdout: true).trim()
+                    
+                    // Parsear la respuesta JSON
+                    def jsonResponse = jsonParse(response)
+                    def qualityGateStatus = jsonResponse.projectStatus.status
+
+                    // Verificar el estado del Quality Gate
+                    if (qualityGateStatus != 'OK') {
+                        error "Quality gate failed: ${qualityGateStatus}"
+                    } else {
+                        echo "Quality Gate passed!"
+                    }
+                }
+            }
+        }
