@@ -31,7 +31,7 @@ pipeline {
                 sh '''
                     ${SONAR_SCANNER_HOME}/bin/sonar-scanner \
                     -Dsonar.projectKey=mi-proyecto \
-                    -Dsonar.sources=src \
+                    -Dsonar.sources=codigo \
                     -Dsonar.host.url=${SONAR_HOST_URL} \
                     -Dsonar.login=${SONAR_TOKEN}
                 '''
