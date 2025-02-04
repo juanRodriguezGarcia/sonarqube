@@ -1,14 +1,15 @@
 pipeline {
     agent {
         dockerfile {
-            dir '.'  // Indica que el Dockerfile está en el directorio raíz del proyecto
-            args '-v /var/run/docker.sock:/var/run/docker.sock --add-host sonar.server.test:35.153.134.0:9000'  // Mapea el Docker Socket y agrega el host de SonarQube
+            args '-v /opt/sonar-scanner/:/opt/sonar-scanner/ -v /usr/lib/jvm/java-17-amazon-corretto.x86_64:/usr/lib/jvm/java-17-amazon-corretto.x86_64 --add-host server.sonar:35.153.134.0'
         }
     }
+    
     
     environment {
         SONARQUBE_URL = "http://35.153.134.0:9000"  // URL de tu servidor SonarQube
         SONAR_TOKEN = credentials('tokensonar')  // Credenciales de SonarQube
+        JAVA_HOME = '/usr/lib/jvm/java-17-amazon-corretto.x86_64'
     }
 
     stages {
@@ -21,8 +22,8 @@ pipeline {
         stage('Instalar Dependencias y Compilar') {
             steps {
                 script {
-                    sh 'npm install'  // Instala las dependencias del proyecto Node.js
-                    sh 'npm run build'  // Ejecuta la compilación, si es necesario
+                    sh 'ls -ltr'  // Instala las dependencias del proyecto Node.js
+                    sh 'ls -ltr /usr/lib/jvm/java-17-amazon-corretto.x86_64'
                 }
             }
         }
@@ -30,9 +31,12 @@ pipeline {
         stage('Ejecutar SonarQube Scan') {
             steps {
                 script {
+                    
+                    echo  "################  BINARIOS ################"
+                    sh "ls -ltr /opt/sonar-scanner/bin"
                     // Ejecuta el escaneo de SonarQube dentro del contenedor Docker
                     sh """
-                        sonar-scanner \
+                        /opt/sonar-scanner/bin/sonar-scanner \
                         -Dsonar.projectKey=mi-proyecto-dockerfile \
                         -Dsonar.sources=codigo \
                         -Dsonar.host.url=${SONARQUBE_URL} \

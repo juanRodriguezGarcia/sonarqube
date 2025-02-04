@@ -2,7 +2,7 @@
 FROM node:18
 
 # Directorio de trabajo en el contenedor
-WORKDIR /usr/src/app
+#WORKDIR /usr/src/app
 
 # Copiamos el package.json y el package-lock.json (si existen) para la instalación de dependencias
 #COPY package*.json ./
